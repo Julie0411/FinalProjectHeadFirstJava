@@ -13,22 +13,20 @@ abstract class Player{
 abstract class Bet {
 
     private Player player;
-    private int multiplier;
     protected int amount;
     protected List<Slot> bettedSlots;
 
-    public Bet(Player player, int amount, int multiplier, List<Slot> slots) {
-        this(player,amount, multiplier);
+    public Bet(Player player, int amount, List<Slot> slots) {
+        this(player,amount);
         if (bettedSlots == null || bettedSlots.isEmpty()) throw new RuntimeException("You have to choose to what point");
         this.bettedSlots = slots;
     }
-    public Bet(Player player, int amount, int multiplier) {
+    public Bet(Player player, int amount) {
         if (player == null) throw new RuntimeException("the player can't be null");
         if (amount < 0) throw new RuntimeException("You have to place a bet");
-        if (multiplier < 0) throw new RuntimeException("The multiplier can't be negative");
         this.player = player;
         this.amount = amount;
-        this.multiplier = multiplier;
+
     }
 
     boolean isWinning(Slot extractedSlot) {
@@ -41,7 +39,8 @@ abstract class Bet {
     }
 
     protected int prize() {
-        return this.amount * multiplier;
+        checkSlotSet();
+        return this.amount * (Slot.MAX_SLOT_VALUE/this.bettedSlots.size());
     }
 
     protected void checkSlotSet() {
@@ -56,7 +55,7 @@ class SingleNumberBet extends Bet{
 
     public SingleNumberBet(Player player, int amount, Slot slot) {
         // @TODO guard condition
-        super(player, amount, 36, Arrays.asList(slot));
+        super(player, amount, Arrays.asList(slot));
     }
 
 }
@@ -65,7 +64,7 @@ class ColumnNumberBet extends Bet{
 
     public ColumnNumberBet(Player player, int amount, int column) {
         // @TODO guard condition
-        super(player, amount, 3);
+        super(player, amount);
         List<Slot> slots = new ArrayList<>();
         for (int i = column; i <= Slot.MAX_SLOT_VALUE; i++){
             slots.add(new Slot(i));
@@ -77,7 +76,7 @@ class ColumnNumberBet extends Bet{
 
 class DozenBet extends Bet{
     public DozenBet(Player player, int amount, int dozen) {
-        super(player, amount, 3);
+        super(player, amount);
         if (dozen < 1 || dozen > 3) throw new RuntimeException("Dozen is invalid");
         List<Slot> slots = new ArrayList<>();
         for (int i = 12 * (dozen - 1) + 1; i <= 12 * dozen; i++) {
@@ -92,17 +91,13 @@ class ColorBet extends Bet {
 
     enum Color{
 
-        GREEN(36),
-        RED(2),
-        BLACK(2);
+        GREEN,
+        RED,
+        BLACK;
 
-        int multiplier;
-        Color(int multiplier){
-             this.multiplier = multiplier;
-        }
     }
     public ColorBet(Player player, int amount, Color color) {
-        super(player, amount, color.multiplier);
+        super(player, amount);
         this.setBettedSlots(fillSlot(color));
     }
 
