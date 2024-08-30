@@ -1,10 +1,9 @@
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class StefanoLambda {
 
     public static void main(String[] args) {
-        Function<Integer,Integer> quadratoClassico = new Quadrato();
+        Function<Integer,Integer> quadratoClassico = new QuadratoStefano();
 
         Function<Integer,Integer> quadratoAnnidatoAnonimo = new Function<Integer, Integer>() {
             @Override
@@ -35,7 +34,7 @@ class MathButBetter {
     }
 }
 
-class Quadrato implements Function<Integer,Integer>{
+class QuadratoStefano implements Function<Integer,Integer>{
     @Override
     public Integer apply(Integer arg) {
         return arg*arg;
